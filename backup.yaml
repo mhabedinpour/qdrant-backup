@@ -1,0 +1,67 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: qdrant-backup-bucket
+  namespace: qdrant
+stringData:
+  access-key: "${QDRANT_BACKUP_BUCKET_ACCESS_ID}"
+  access-secret: "${QDRANT_BACKUP_BUCKET_ACCESS_SECRET}"
+  name: "${QDRANT_BACKUP_BUCKET}"
+  address: "${QDRANT_BACKUP_BUCKET_ADDRESS}"
+  region: "${QDRANT_BACKUP_BUCKET_REGION}"
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: qdrant-backup
+  namespace: qdrant
+spec:
+  schedule: "0 0 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: qdrant-backup
+              imagePullPolicy: "IfNotPresent"
+              image: ${IMAGE_ADDRESS}:${CONTAINER_TAG}
+              env:
+                - name: OBJECT_STORAGE_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: qdrant-backup-bucket
+                      key: access-key
+                - name: OBJECT_STORAGE_ACCESS_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: qdrant-backup-bucket
+                      key: access-secret
+                - name: OBJECT_STORAGE_BUCKET_NAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: qdrant-backup-bucket
+                      key: name
+                - name: OBJECT_STORAGE_ADDRESS
+                  valueFrom:
+                    secretKeyRef:
+                      name: qdrant-backup-bucket
+                      key: address
+                - name: OBJECT_STORAGE_REGION
+                  valueFrom:
+                    secretKeyRef:
+                      name: qdrant-backup-bucket
+                      key: region
+                - name: QDRANT_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: qdrant-apikey
+                      key: api-key
+                - name: QDRANT_GRPC_SERVICE_ADDRESS
+                  value: 'qdrant-headless'
+                - name: QDRANT_GRPC_PORT
+                  value: '6334'
+                - name: QDRANT_HTTP_PORT
+                  value: '6333'
+                - name: COLLECTIONS_TO_BACKUP
+                  value: 'midlib-clip-avg,qdrant-docs'
