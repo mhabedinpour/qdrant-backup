@@ -32,3 +32,13 @@ All configuration parameters should be set using environment variables:
 |       QDRANT_HTTP_PORT       |               Qdrant HTTP Port                |                6333                 |
 |    COLLECTIONS_TO_BACKUP     | Comma-separated list of collections to backup | collection1,collection2,collection3 |
 
+## How to restore?
+1. Download compressed snapshots on a temporary server (or pod), uncompress them using `gzip -d ${PATH}`.
+2. Restore snapshot using the following command:
+```shell
+curl -X POST "http://${QDRANT_REST_ADDRESS}/collections/${COLLECTION_NAME}/snapshots/upload?priority=snapshot" \
+   -H "api-key: ${QDRANT_API_KEY}" \
+   -H "Content-Type:multipart/form-data" \
+   -F "snapshot=@${PATH}"
+```
+
