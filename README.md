@@ -12,8 +12,7 @@ This script can automatically back up different collections on a Qdrant cluster 
 
 1. You need a Qdrant cluster deployed on a Kubernetes cluster.
 2. You need a headless service containing all qdrant nodes.
-3. Build [Dockerfile](Dockerfile) and push it to an image registry.
-4. Deploy it as a cronjob (or any other type of workload) to the same Kubernetes cluster. [Sample manifest](backup.yaml) is included.
+3. Deploy the script as a cronjob (or any other type of workload) to the same Kubernetes cluster. [Sample manifest](backup.yaml) is included.
 
 ## Configurations
 

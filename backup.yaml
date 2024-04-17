@@ -25,7 +25,7 @@ spec:
           containers:
             - name: qdrant-backup
               imagePullPolicy: "IfNotPresent"
-              image: ${IMAGE_ADDRESS}:${CONTAINER_TAG}
+              image: ghcr.io/mhabedinpour/qdrant-backup:latest
               env:
                 - name: OBJECT_STORAGE_ACCESS_KEY
                   valueFrom:
